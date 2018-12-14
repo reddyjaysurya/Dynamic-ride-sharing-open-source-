@@ -1,0 +1,132 @@
+\documentclass[11pt]{article}
+\usepackage[margin=0.5in]{geometry} %for margin
+\usepackage{graphicx} %for image
+\usepackage{float} %to enable the H option of image
+\usepackage{upgreek} % to use upgreek letter
+\usepackage[ruled,vlined]{algorithm2e} %to write the algorithm
+\usepackage{amsmath} %for \text
+\renewcommand{\thealgocf}{} %we use this to avoid algorithm number to be shown
+
+\begin{document}
+\begin{center}
+\vspace*{1cm}
+    \huge{\textbf{Dynamic Ride Sharing}} \\
+    \Large{\textbf{Report 1}} \\
+    By K Jaysurya, Himanshu Poddar\\
+    September 09, 2018 \\
+\end{center}
+
+\section{Abstract}
+Ridesharing is an important component for a sustainable urban transportation as it increases vehicle utilization by promoting carpooling. By sharing rides, drivers offer seats in their vehicles to passengers who want to travel in similar directions. We use the concept of Ant Colony optimization(ACO) to implement an algorithm that would set up the shortest path between source and multiple destinations. In this report we have mainly focused on why and how can we use ACO to solve the Dynamic ride sharing problem.
+
+\section{Introduction}
+\subsection{Ant Colony Optimisation}
+Ants deposit pheromone when they travel to places. Other Ants follow the trail of pheromone. If a path has more pheromone concentration, ants are likely to take that path instead of other paths with less pheromone concentration. This pheromone keeps on evaporating with time.
+\subsubsection{An obstruction comes in the path}
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.3]{2.png}
+\caption{An obstruction comes in the path}
+\label{fig:bar}
+\end{figure}
+
+Initially when there is no pheromone content the ants will traverse random paths to reach the destination.Because there is no pheromone on each side. Hence Ants will randomly divide itself. Therefore 50\% of the ants will go left and another 50\%, right.Same way for the other side, lets say ants take 1 unit of time to complete 2D distance, so in 1 unit, we can say that ant which has taken the route AB will reach ABD and the ant which has taken the root AC will reach point C only. Since, pheromone is also evaporating, let us consider rate of pheromone evaporation as $\frac{1}{2}^t * P_{o},$
+where Po is the initial pheromone content, so after 1 unit time, it becomes $\frac{1}{2}$ and in second unit time it becomes $\frac{1}{4}$ and so on.\\ \\
+Suppose if there were 100 ants initially, after 1 unit of time and after parting their ways, 50 ants would deposit pheromone on the path ABD but the ants in the path AC are yet to reach D. Hence, the pheromone content on the upper path will keep on increasing.Also some ants lets suppose 100 ants were coming back from the food and  they also parted their ways in the obstruction, So, we can see that the upper path would have pheromone content of 100 ants while the lower path still is not covered with pheromone. Ants follow pheromone with more concentration and since the content of pheromone is more in the upper path, more ants will tend to take the upper path. \\
+Therefore the concentration of pheromone will keep on increasing in the upper path and ultimately a stage will come when all ants will move towards one path thus establishing the Local maxima.
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.3]{2b.png}
+\caption{All ants moved to the shortest path}
+\label{fig:2b}
+\end{figure}
+ \subsubsection{How do they find food}
+ 
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.3]{3.png}
+\caption{Ants start searching for food}
+\label{fig:3}
+\end{figure}
+Initially to find food ants may be moving randomly. Lets suppose some of the ants take path ABC and others take ADC. Initially, the ants take both the paths with
+equal probability, that is both the paths are traversed randomly with the probability that (1/2) of the ants take first path and other half take the other path.
+The first path however has advantage because the ant's taking the first path will reach and retrieve the food faster then the ants which take the second path. For example, it may take an ant to lay a single pheromone trail from the food back to the colony taking original path but in that time the ant's taking lower path will be able to lay two pheromone trails when taking shorter path. Due to this, the shorter path will begin to acquire more pheromone than the lower path. This then leads to the original pheromone trail being used less and eventually evaporating in favour of new shortest path.
+\subsection{Why ACO in Dynamic Ride Sharing}
+Dynamic ride sharing involves finding the shortest path between source and destination. ACO can be used to find the shortest path for the purpose.\\
+Lets suppose n cities or n nodes.
+ 
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.5]{4.png}
+\caption{Shortest path between source and destination}
+\label{fig:4}
+\end{figure}
+where \textcircled{1} is source and \textcircled{8} is destination. Though there are many possible path between 1 to 8. But if we see the figure, the best possible route is $1-3-4-8$ to reach from source and destination node by choosing the best optimal path.
+
+\subsection{How does ACO works in Dynamic Ride Sharing}
+There are n cities, then l distinct ants can start from any of these n cities randomly. Here we choose distance between cities as the cost parameter.
+
+\subsubsection{Algorithm}
+At the beginning of the search process, a constant amount of pheromone is assigned to all paths. When located at a node i an ant k uses the pheromone trail to compute the probability of choosing j as the next node given by $p_{ij}^k$. \\ \\
+When the ant travels this path (i,j) the pheromone value is updated again $\uptau_{ij}\leftarrow\uptau_{ij} + \Delta\uptau^{k}$.\\ \\
+By using this rule, the probability increases, forthcoming ants will use this arc.\\ \\
+Also after each ant k has moved to next node the pheromone evaporates by following equation.\\
+\begin{center}$\uptau_{ij}\leftarrow(1 - p)\uptau_{ij}, \forall(i, j)\in A$ \end{center}
+\begin{algorithm}[H]
+\SetAlgoLined
+ initialize trail\;
+ \While{Stopping criteria not satisfied or no of iteration}{
+ \While {Each ant completes a tour}{
+  local trail update\;
+  }
+  AnalyzeTours \;
+  Global Trail Update\;
+ }
+ \caption{\textsc{ACO}}
+ \end{algorithm}
+ The ant's choose the path based on the probability which is given by \\
+\begin{center}
+\Large
+\begin{equation}
+\uptau_{xy} = \frac{[\uptau_{xy}(t)]^{\alpha}[\eta_{xy}(t)]^{\beta}}{\sum\limits_{j \in allowed}
+[\uptau_{xy}(t)]^{\alpha}[\eta_{xy}(t)]^{\beta}}, \alpha \geq 0,\beta \geq 0
+\end{equation}
+\end{center}
+\begin{itemize} %formula terms explaination
+\item[]\hspace{6cm} is the probability of $k^{th}$ ant taking the route x to y or y to x
+\item[] \hspace*{6cm} [$\eta$] is the value of heuristic related to path line i.e $\eta_{xy}=\frac{1}{l(x,y)}$
+\item[] \hspace*{6cm}$\uptau(x,y)$ is pheromone density of the path
+\end{itemize}
+
+\begin{center}
+\Large
+\begin{equation}
+\uptau(x,y) \mathrel{\mathop:}=(1 - \rho)\uptau_{xy} + \Delta\uptau_{xy}
+\end{equation}
+\end{center}
+\begin{itemize} %formula terms explaination
+\item[]\hspace{6cm}$\rho$ is coefficient of vaporisation of pheromone
+\item[] \hspace*{6cm}$\Delta\uptau_{xy}$ is the change in the value of $\uptau_{xy}$ for this k iteration
+\end{itemize}
+\newpage
+\begin{center}
+\Large
+\[   
+\Delta\uptau_{xy} = 
+     \begin{cases}
+       \frac{Q}{L_k} &\quad\text{distance travelled by $k^{th}$ ant if ant k travels} \\
+       \text{0} &\quad\text{otherwise}\\
+     \end{cases}
+\]
+\begin{itemize} %formula terms explaination
+\item[]\hspace{6cm}Q is the distance
+\item[] \hspace*{6cm}$L_k$ is the distance from x to y
+\end{itemize}
+
+\end{center}
+
+\subsection{Conclusion}
+Using an ACO algorithm the shortest path, between source and destination is-built from a combination of several paths that are possible. \\
+Ant's mark the best solution that is established by the Local maxima and take account of previous marking to optimise their search.\\
+Ants will lay pheromone in proportion to the distance and then overtime this will move towards the shortest path and hence achieving the Local maximum optimised value fir the shortest distance between a combinations of points.
+\end{document}
